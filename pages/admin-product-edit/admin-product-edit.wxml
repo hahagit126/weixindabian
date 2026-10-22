@@ -1,0 +1,255 @@
+
+<!-- pages/admin-product-edit/admin-product-edit.wxml -->
+
+<view class="page">
+
+  <!-- 顶部 -->
+  <view class="header">
+
+    <view
+      class="back"
+      bindtap="goBack"
+    >
+      ←
+    </view>
+
+    <view class="header-content">
+
+      <view class="title">
+        {{isEdit ? '编辑商品' : '新增商品'}}
+      </view>
+
+      <view class="subtitle">
+        {{isEdit ? '修改商品信息' : '创建新的店铺商品'}}
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <!-- 商品表单 -->
+  <view class="form-card">
+
+
+    <!-- 商品名称 -->
+    <view class="form-item">
+
+      <view class="form-label">
+        商品名称
+      </view>
+
+      <input
+        class="form-input"
+        value="{{name}}"
+        placeholder="请输入商品名称"
+        maxlength="20"
+        bindinput="inputName"
+      />
+
+    </view>
+
+
+    <!-- 商品描述 -->
+    <view class="form-item">
+
+      <view class="form-label">
+        商品描述
+      </view>
+
+      <input
+        class="form-input"
+        value="{{desc}}"
+        placeholder="请输入商品描述"
+        maxlength="50"
+        bindinput="inputDesc"
+      />
+
+    </view>
+
+
+    <!-- 商品价格 -->
+    <view class="form-item">
+
+      <view class="form-label">
+        商品价格
+      </view>
+
+      <view class="price-input-wrap">
+
+        <text class="price-symbol">
+          ¥
+        </text>
+
+        <input
+          class="price-input"
+          type="digit"
+          value="{{price}}"
+          placeholder="0.00"
+          bindinput="inputPrice"
+        />
+
+      </view>
+
+    </view>
+
+
+    <!-- =========================
+         商品图标
+    ========================== -->
+
+    <view class="form-item">
+
+      <view class="form-label">
+        商品图标
+      </view>
+
+
+      <!-- 当前图标按钮 -->
+
+      <view
+        class="emoji-select-box"
+        bindtap="toggleEmojiPicker"
+      >
+
+        <view class="emoji-current">
+          {{emoji}}
+        </view>
+
+        <view class="emoji-select-info">
+
+          <view class="emoji-select-title">
+            {{emojiPickerShow ? '请选择商品图标' : '点击选择商品图标'}}
+          </view>
+
+          <view class="emoji-select-desc">
+            可选择饮品、甜品、轻食等图标
+          </view>
+
+        </view>
+
+        <view class="emoji-arrow">
+          {{emojiPickerShow ? '▲' : '▼'}}
+        </view>
+
+      </view>
+
+
+      <!-- 自定义图标选择面板 -->
+
+      <view
+        wx:if="{{emojiPickerShow}}"
+        class="emoji-picker"
+      >
+
+        <view class="emoji-picker-title">
+          选择一个图标
+        </view>
+
+
+        <view class="emoji-grid">
+
+          <view
+            wx:for="{{emojiList}}"
+            wx:key="*this"
+            class="emoji-option {{emoji === item ? 'emoji-option-active' : ''}}"
+            data-emoji="{{item}}"
+            bindtap="selectEmoji"
+          >
+            {{item}}
+          </view>
+
+        </view>
+
+      </view>
+
+    </view>
+
+
+    <!-- 分类 -->
+    <view class="form-item">
+
+      <view class="form-label">
+        商品分类
+      </view>
+
+      <picker
+        mode="selector"
+        range="{{categoryList}}"
+        range-key="name"
+        value="{{categoryIndex}}"
+        bindchange="changeCategory"
+      >
+
+        <view class="picker-box">
+
+          <view class="picker-text">
+            {{categoryList[categoryIndex].name}}
+          </view>
+
+          <view class="picker-arrow">
+            ▼
+          </view>
+
+        </view>
+
+      </picker>
+
+    </view>
+
+
+    <!-- 上架状态 -->
+    <view class="form-item">
+
+      <view class="form-label">
+        商品状态
+      </view>
+
+      <view
+        class="sale-switch {{onSale ? 'sale-on' : 'sale-off'}}"
+        bindtap="toggleSale"
+      >
+
+        <view class="sale-switch-dot"></view>
+
+        <text>
+          {{onSale ? '上架销售' : '暂不上架'}}
+        </text>
+
+      </view>
+
+    </view>
+
+
+    <!-- 编辑时显示 ID -->
+    <view
+      wx:if="{{isEdit}}"
+      class="id-info"
+    >
+
+      商品 ID：{{id}}
+
+    </view>
+
+
+    <!-- 保存 -->
+    <button
+      class="save-btn"
+      bindtap="saveProduct"
+    >
+      {{isEdit ? '保存商品' : '新增商品'}}
+    </button>
+
+
+    <!-- 返回 -->
+    <button
+      class="back-btn"
+      bindtap="goBack"
+    >
+      取消
+    </button>
+
+  </view>
+
+</view>
+

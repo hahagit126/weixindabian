@@ -1,0 +1,514 @@
+
+/* pages/admin-product/admin-product.wxss */
+
+page {
+  background: #fff8f0;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 60rpx;
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   顶部
+========================= */
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 38rpx 32rpx 34rpx;
+  background: #ffffff;
+  border-bottom-left-radius: 40rpx;
+  border-bottom-right-radius: 40rpx;
+  box-shadow: 0 8rpx 28rpx rgba(120, 85, 55, 0.06);
+}
+
+.back {
+  width: 76rpx;
+  height: 76rpx;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff3e6;
+  border-radius: 24rpx;
+
+  color: #7b5235;
+  font-size: 42rpx;
+}
+
+.header-content {
+  margin-left: 22rpx;
+}
+
+.title {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #4b3528;
+}
+
+.subtitle {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #a58c7c;
+}
+
+
+/* =========================
+   新增商品
+========================= */
+
+.add-card {
+  display: flex;
+  align-items: center;
+
+  margin: 28rpx 28rpx 10rpx;
+  padding: 26rpx;
+
+  background: linear-gradient(
+    135deg,
+    #fff1df,
+    #ffe5c4
+  );
+
+  border: 2rpx solid #f5d7b6;
+  border-radius: 30rpx;
+
+  box-shadow: 0 10rpx 28rpx rgba(154, 100, 55, 0.08);
+}
+
+.add-icon {
+  width: 82rpx;
+  height: 82rpx;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  border-radius: 25rpx;
+
+  color: #d88945;
+  font-size: 44rpx;
+}
+
+.add-info {
+  flex: 1;
+  margin-left: 22rpx;
+}
+
+.add-title {
+  font-size: 31rpx;
+  font-weight: 700;
+  color: #5a3c29;
+}
+
+.add-desc {
+  margin-top: 7rpx;
+  font-size: 23rpx;
+  color: #a68169;
+}
+
+.add-arrow {
+  width: 50rpx;
+  text-align: right;
+  font-size: 44rpx;
+  color: #b78662;
+}
+
+
+/* =========================
+   标题
+========================= */
+
+.section-head {
+  display: flex;
+  align-items: center;
+
+  margin: 34rpx 32rpx 22rpx;
+}
+
+.section-line {
+  width: 8rpx;
+  height: 34rpx;
+
+  flex-shrink: 0;
+
+  background: #d99862;
+  border-radius: 10rpx;
+
+  margin-right: 16rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #54392b;
+}
+
+.section-count {
+  margin-left: auto;
+
+  padding: 8rpx 18rpx;
+
+  background: #f5e8dc;
+  border-radius: 20rpx;
+
+  color: #9a765e;
+  font-size: 22rpx;
+}
+
+
+/* =========================
+   商品列表
+========================= */
+
+.product-list {
+  padding: 0 28rpx;
+}
+
+
+/* =========================
+   商品卡片
+========================= */
+
+.product-card {
+  display: flex;
+  align-items: stretch;
+
+  width: 100%;
+
+  margin-bottom: 24rpx;
+  padding: 24rpx;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-radius: 30rpx;
+
+  border: 2rpx solid rgba(230, 211, 194, 0.55);
+
+  box-shadow:
+    0 10rpx 30rpx rgba(117, 77, 49, 0.07);
+}
+
+
+/* =========================
+   商品图标
+========================= */
+
+.product-image {
+  position: relative;
+
+  width: 150rpx;
+  height: 150rpx;
+
+  flex-shrink: 0;
+
+  box-sizing: border-box;
+
+  background: linear-gradient(
+    135deg,
+    #fff3e2,
+    #ffe0bd
+  );
+
+  border-radius: 28rpx;
+
+  overflow: hidden;
+}
+
+
+/*
+ * 关键：
+ * 不再依赖文字自身的 line-height 居中
+ * 直接绝对定位到整个图片区域正中心
+ */
+
+.product-emoji {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  /* 整体向上移动 10rpx */
+  transform: translate(-50%, calc(-50% - 35rpx));
+
+  width: 100%;
+
+  text-align: center;
+
+  font-size: 72rpx;
+
+  line-height: 1;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =========================
+   商品信息
+========================= */
+
+.product-info {
+  flex: 1;
+
+  min-width: 0;
+
+  margin-left: 24rpx;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+/* 商品名称 */
+
+.product-name-row {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+}
+
+.product-name {
+  max-width: 300rpx;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 31rpx;
+  font-weight: 700;
+
+  color: #4d3528;
+}
+
+
+/* 状态标签 */
+
+.deleted-tag,
+.offsale-tag,
+.onsale-tag {
+  flex-shrink: 0;
+
+  margin-left: 12rpx;
+
+  padding: 6rpx 13rpx;
+
+  border-radius: 15rpx;
+
+  font-size: 20rpx;
+
+  line-height: 1.4;
+}
+
+.deleted-tag {
+  color: #9b7474;
+  background: #f3e7e7;
+}
+
+.offsale-tag {
+  color: #a67a45;
+  background: #fff1dc;
+}
+
+.onsale-tag {
+  color: #5e9271;
+  background: #e8f5e9;
+}
+
+
+/* 商品描述 */
+
+.product-desc {
+  width: 100%;
+
+  margin-top: 10rpx;
+
+  color: #9d897b;
+
+  font-size: 24rpx;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   价格 + ID
+========================= */
+
+.product-meta {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  margin-top: 12rpx;
+}
+
+.price {
+  color: #d97945;
+  font-size: 35rpx;
+  font-weight: 700;
+}
+
+.price-symbol {
+  font-size: 24rpx;
+  margin-right: 3rpx;
+}
+
+.product-id {
+  margin-left: 18rpx;
+
+  color: #b1a095;
+  font-size: 21rpx;
+}
+
+
+/* =========================
+   操作按钮
+========================= */
+
+.product-actions {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  margin-top: 20rpx;
+
+  gap: 14rpx;
+}
+
+
+/*
+ * 三个按钮明显放大
+ */
+
+.action {
+  min-width: 108rpx;
+
+  height: 58rpx;
+
+  padding: 0 18rpx;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18rpx;
+
+  font-size: 23rpx;
+  font-weight: 500;
+
+  line-height: 1;
+
+  text-align: center;
+}
+
+
+/* 编辑 */
+
+.edit-action {
+  color: #765a47;
+  background: #f7eee7;
+
+  border: 1rpx solid #ead9cb;
+}
+
+
+/* 上架 / 下架 */
+
+.sale-action {
+  color: #66856b;
+  background: #edf6ed;
+
+  border: 1rpx solid #d9eadb;
+}
+
+
+/* 删除 */
+
+.delete-action {
+  color: #a66d6d;
+  background: #faeeee;
+
+  border: 1rpx solid #efd8d8;
+}
+
+
+/* 恢复 */
+
+.restore-action {
+  color: #66856b;
+  background: #eaf6ed;
+
+  border: 1rpx solid #d5ead9;
+}
+
+
+/* =========================
+   已删除商品
+========================= */
+
+.product-deleted {
+  opacity: 0.72;
+  background: #faf8f6;
+}
+
+
+/* =========================
+   空状态
+========================= */
+
+.empty {
+  margin: 70rpx 28rpx;
+
+  padding: 80rpx 30rpx;
+
+  text-align: center;
+
+  background: #ffffff;
+
+  border-radius: 32rpx;
+
+  box-shadow:
+    0 10rpx 30rpx rgba(117, 77, 49, 0.05);
+}
+
+.empty-icon {
+  font-size: 90rpx;
+}
+
+.empty-title {
+  margin-top: 20rpx;
+
+  font-size: 31rpx;
+  font-weight: 700;
+
+  color: #614638;
+}
+
+.empty-desc {
+  margin-top: 12rpx;
+
+  font-size: 23rpx;
+
+  color: #a79589;
+}
+

@@ -1,0 +1,142 @@
+
+<view class="page">
+  <!-- 页面标题 -->
+  <view class="page-heading">
+    <view class="back-button" bindtap="goBack">‹</view>
+    <text class="heading-title">确认订单</text>
+    <view class="heading-placeholder"></view>
+  </view>
+
+  <!-- 配送信息卡片 -->
+  <view class="card address-card">
+    <view class="card-title-row">
+      <view class="title-icon">📍</view>
+      <view class="card-title">配送信息</view>
+    </view>
+
+    <view class="delivery-options">
+      <view
+        class="delivery-option {{deliveryType === '配送' ? 'delivery-active' : ''}}"
+        data-type="配送"
+        bindtap="selectDelivery"
+      >校园配送</view>
+      <view
+        class="delivery-option {{deliveryType === '到店自取' ? 'delivery-active' : ''}}"
+        data-type="到店自取"
+        bindtap="selectDelivery"
+      >到店自取</view>
+    </view>
+
+    <view wx:if="{{deliveryType === '配送'}}">
+      <view class="address-label">收货地址</view>
+      <view class="address-text">
+        {{deliveryAddress || '尚未选择配送地址，请选择位置'}}
+      </view>
+
+      <view class="address-actions">
+        <button class="action-button primary-action" bindtap="chooseDeliveryLocation">
+          地图选地址
+        </button>
+        <button class="action-button secondary-action" bindtap="locateCurrentPosition">
+          自动定位
+        </button>
+      </view>
+
+      <view wx:if="{{hasLocation}}" class="map-wrapper">
+        <map
+          class="delivery-map"
+          latitude="{{latitude}}"
+          longitude="{{longitude}}"
+          markers="{{markers}}"
+          scale="16"
+          show-location="{{true}}"
+          bindtap="chooseDeliveryLocation"
+        ></map>
+        <view class="map-caption">
+          <text class="map-caption-dot"></text>
+          <text>已选择配送位置，点击地图可重新选点</text>
+        </view>
+        <view class="coordinate-text">
+          {{locationName || '已选择的位置'}}
+        </view>
+      </view>
+
+      <view wx:else class="map-placeholder" bindtap="chooseDeliveryLocation">
+        <text class="placeholder-icon">🗺️</text>
+        <text class="placeholder-title">请选择配送位置</text>
+        <text class="placeholder-desc">可在地图中选择地址，或使用自动定位</text>
+      </view>
+    </view>
+
+    <view wx:else class="pickup-info">
+      <text class="pickup-title">到店自取</text>
+      <text class="pickup-desc">下单后请到店内出示订单取餐</text>
+    </view>
+  </view>
+
+  <!-- 商品清单 -->
+  <view class="card section">
+    <view class="section-heading">
+      <text class="section-title">商品清单</text>
+      <text class="section-count">{{totalCount}} 件</text>
+    </view>
+
+    <view
+      class="order-item"
+      wx:for="{{orderList}}"
+      wx:key="cartId"
+    >
+      <view class="item-emoji">{{item.emoji}}</view>
+
+      <view class="item-info">
+        <view class="item-name">{{item.name}}</view>
+        <view class="item-desc">{{item.desc}}</view>
+        <view class="item-bottom">
+          <text class="item-price">¥{{item.price}}</text>
+          <text class="item-quantity">× {{item.quantity}}</text>
+        </view>
+      </view>
+
+      <view class="item-subtotal">¥{{item.subtotal}}</view>
+    </view>
+
+    <view wx:if="{{orderList.length === 0}}" class="empty">
+      <text class="empty-icon">🛒</text>
+      <text class="empty-text">购物车是空的</text>
+    </view>
+  </view>
+
+  <!-- 费用明细 -->
+  <view class="card price-card">
+    <view class="price-row">
+      <text>商品小计</text>
+      <text>¥{{totalPrice}}</text>
+    </view>
+
+    <view class="price-row">
+      <text>配送费</text>
+      <text>{{deliveryFee === 0 ? '免配送费' : '¥' + deliveryFee}}</text>
+    </view>
+
+    <view class="price-divider"></view>
+
+    <view class="total-row">
+      <text>合计</text>
+      <text class="total-price">¥{{finalPrice}}</text>
+    </view>
+  </view>
+
+  <!-- 固定底部结算栏 -->
+  <view class="bottom-bar">
+    <view class="bottom-price">
+      <text class="bottom-label">应付</text>
+      <text class="bottom-total">¥{{finalPrice}}</text>
+    </view>
+
+    <button
+      class="submit-btn"
+      bindtap="submitOrder"
+      disabled="{{orderList.length === 0}}"
+    >提交订单</button>
+  </view>
+</view>

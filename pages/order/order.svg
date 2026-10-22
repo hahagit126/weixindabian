@@ -1,0 +1,54 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- 外圈 -->
+  <circle
+    cx="60"
+    cy="60"
+    r="55"
+    fill="#F7F7F7"
+    stroke="#222222"
+    stroke-width="3"
+  />
+
+  <!-- 购物袋 -->
+  <path
+    d="M32 48H88L83 92H37L32 48Z"
+    fill="none"
+    stroke="#222222"
+    stroke-width="4"
+    stroke-linejoin="round"
+  />
+
+  <!-- 提手 -->
+  <path
+    d="M45 48V39C45 30.7 51.7 24 60 24C68.3 24 75 30.7 75 39V48"
+    fill="none"
+    stroke="#222222"
+    stroke-width="4"
+    stroke-linecap="round"
+  />
+
+  <!-- 订单装饰线 -->
+  <path
+    d="M45 61H75"
+    stroke="#222222"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+
+  <path
+    d="M45 71H68"
+    stroke="#777777"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+
+  <!-- 小圆点 -->
+  <circle
+    cx="84"
+    cy="84"
+    r="9"
+    fill="#222222"
+  />
+
+</svg>

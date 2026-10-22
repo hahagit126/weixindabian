@@ -1,0 +1,193 @@
+<!-- pages/index/index.wxml -->
+
+<view class="page">
+
+  <!-- 顶部欢迎区域 -->
+  <view class="header">
+
+    <view class="header-top">
+      <view class="shop-name">🧸 一二布布小铺</view>
+
+      <view class="merchant-btn" bindtap="openAdmin">
+        <view class="dot"></view>
+        商家
+      </view>
+    </view>
+
+    <view class="welcome">
+
+      <!-- 两只小熊 -->
+      <view class="bears">
+        <view class="bear white-bear">🐻</view>
+        <view class="bear brown-bear">🧸</view>
+      </view>
+
+      <view class="welcome-text">
+        <view class="welcome-title">Hi~ 欢迎来到布布小铺！</view>
+        <view class="welcome-desc">
+          一二和布布为你准备了
+          <text>\n</text>
+          今天的美味菜单 🍯
+        </view>
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <!-- DIY入口 -->
+  <view class="diy-banner" bindtap="goDIY">
+
+    <view class="diy-icon">🎨</view>
+
+    <view class="diy-text">
+      <view class="diy-title">✨ 自创专属菜品</view>
+      <view class="diy-desc">搭配你的独家口味</view>
+    </view>
+
+    <view class="diy-arrow">›</view>
+
+  </view>
+
+
+  <!-- 分类标题 -->
+  <view class="section-title">
+    <view class="section-line"></view>
+    <text>选个分类</text>
+  </view>
+
+
+  <!-- 分类 -->
+  <scroll-view
+    class="category-scroll"
+    scroll-x="true"
+    show-scrollbar="false"
+  >
+
+    <view
+      wx:for="{{categories}}"
+      wx:key="id"
+      class="category {{activeCategory == item.id ? 'category-active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="selectCategory"
+    >
+      <text>{{item.emoji}}</text>
+      <text>{{item.name}}</text>
+    </view>
+
+  </scroll-view>
+
+
+  <!-- 菜单标题 -->
+  <view class="section-title menu-title">
+    <view class="section-line"></view>
+    <text>{{menuTitle}}</text>
+  </view>
+
+
+  <!-- 菜品 -->
+  <view class="menu-grid">
+
+    <view
+      wx:for="{{menuList}}"
+      wx:key="id"
+      class="menu-card"
+      data-id="{{item.id}}"
+      bindtap="addCart"
+    >
+
+      <!-- 商品图片区域 -->
+      <view
+        class="card-image"
+        style="background: {{item.background}};"
+      >
+
+        <view
+          wx:if="{{item.tag}}"
+          class="tag {{item.tag}}"
+        >
+          {{item.tagText}}
+        </view>
+
+        <text class="food-emoji">{{item.emoji}}</text>
+
+      </view>
+
+
+      <!-- 商品信息 -->
+      <view class="card-info">
+
+        <view class="food-name">
+          {{item.name}}
+        </view>
+
+        <view class="food-desc">
+          {{item.desc}}
+        </view>
+
+        <view class="card-bottom">
+
+          <view class="price">
+            <text class="yuan">¥</text>{{item.price}}
+          </view>
+
+          <view
+            class="add-btn"
+            data-id="{{item.id}}"
+            catchtap="addCart"
+          >
+            +
+          </view>
+
+        </view>
+
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <!-- 底部导航 -->
+  <view class="bottom-nav">
+
+    <view class="nav-item nav-active" bindtap="goHome">
+      <text class="nav-icon">⌂</text>
+      <text>首页</text>
+    </view>
+
+    <view class="nav-item" bindtap="goDIY">
+      <text class="nav-icon">◇</text>
+      <text>DIY</text>
+    </view>
+
+    <view class="nav-item cart-nav" bindtap="goCart">
+      <text class="nav-icon">🛒</text>
+      <text>购物车</text>
+
+      <view
+        wx:if="{{cartCount > 0}}"
+        class="cart-badge"
+      >
+        {{cartCount}}
+      </view>
+    </view>
+
+    <view class="nav-item" bindtap="goOrders">
+      <text class="nav-icon">▤</text>
+      <text>订单</text>
+    </view>
+
+  </view>
+
+
+  <!-- 简单提示 -->
+  <view
+    wx:if="{{toastShow}}"
+    class="toast"
+  >
+    {{toastText}}
+  </view>
+
+</view>

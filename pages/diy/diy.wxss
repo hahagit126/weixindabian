@@ -1,0 +1,509 @@
+page {
+  background: #FFF8F0;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 30rpx 40rpx 70rpx;
+  box-sizing: border-box;
+  color: #3D2B1F;
+}
+
+
+/* =========================
+   顶部
+========================= */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 15rpx 0 30rpx;
+}
+
+.back {
+  width: 70rpx;
+  height: 70rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff;
+  border-radius: 50%;
+
+  font-size: 40rpx;
+  color: #6F5748;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: 900;
+  color: #5C4510;
+}
+
+.subtitle {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #A58A75;
+}
+
+
+/* =========================
+   步骤条
+========================= */
+
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 35rpx;
+}
+
+.step-box {
+  display: flex;
+  align-items: center;
+}
+
+.step {
+  width: 52rpx;
+  height: 52rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #E8DDD4;
+
+  color: #9C897B;
+
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.step.current {
+  background: #E8705A;
+  color: #fff;
+}
+
+.step.completed {
+  background: #7CB98B;
+  color: #fff;
+}
+
+.step-line {
+  width: 65rpx;
+  height: 5rpx;
+
+  margin: 0 8rpx;
+
+  background: #E8DDD4;
+
+  border-radius: 10rpx;
+}
+
+
+/* =========================
+   标题
+========================= */
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+
+  margin-bottom: 25rpx;
+}
+
+.line {
+  width: 8rpx;
+  height: 65rpx;
+
+  border-radius: 8rpx;
+
+  background: linear-gradient(
+    #E8705A,
+    #F2A7B3
+  );
+}
+
+.title-main {
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.title-sub {
+  margin-top: 5rpx;
+  font-size: 21rpx;
+  color: #A58A75;
+}
+
+
+/* =========================
+   灵感
+========================= */
+
+.inspiration-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22rpx;
+}
+
+.inspiration {
+  position: relative;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  border: 4rpx solid transparent;
+
+  border-radius: 30rpx;
+
+  box-shadow: 0 6rpx 20rpx rgba(139,105,20,.07);
+}
+
+.inspiration.selected {
+  border-color: #E8705A;
+}
+
+.inspiration-image {
+  height: 180rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 80rpx;
+}
+
+.inspiration-info {
+  padding: 18rpx 20rpx 20rpx;
+}
+
+.inspiration-name {
+  font-size: 25rpx;
+  font-weight: 800;
+}
+
+.inspiration-desc {
+  margin-top: 5rpx;
+  font-size: 19rpx;
+  color: #A58A75;
+}
+
+.selected-check {
+  position: absolute;
+
+  right: 12rpx;
+  top: 12rpx;
+
+  width: 38rpx;
+  height: 38rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #E8705A;
+
+  border-radius: 50%;
+
+  color: #fff;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+
+/* =========================
+   基底
+========================= */
+
+.base-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20rpx;
+}
+
+.base-card {
+  position: relative;
+
+  padding: 18rpx;
+
+  text-align: center;
+
+  background: #fff;
+
+  border: 4rpx solid transparent;
+
+  border-radius: 28rpx;
+
+  box-shadow: 0 5rpx 18rpx rgba(139,105,20,.06);
+}
+
+.base-card.selected {
+  border-color: #E8705A;
+  background: #FFF4EF;
+}
+
+.base-icon {
+  width: 100%;
+  height: 110rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 22rpx;
+
+  font-size: 55rpx;
+}
+
+.base-name {
+  margin-top: 12rpx;
+
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.base-price {
+  margin-top: 5rpx;
+
+  font-size: 23rpx;
+  font-weight: 800;
+
+  color: #E8705A;
+}
+
+
+/* =========================
+   配料
+========================= */
+
+.topping-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 16rpx;
+
+  max-height: 750rpx;
+
+  overflow-y: auto;
+}
+
+.topping {
+  display: flex;
+  align-items: center;
+
+  gap: 12rpx;
+
+  padding: 20rpx;
+
+  background: #fff;
+
+  border: 3rpx solid transparent;
+
+  border-radius: 24rpx;
+
+  font-size: 23rpx;
+}
+
+.topping.selected {
+  border-color: #E8705A;
+  background: #FFF1EB;
+}
+
+.topping-emoji {
+  font-size: 35rpx;
+}
+
+.topping-name {
+  flex: 1;
+}
+
+.topping-price {
+  font-size: 19rpx;
+  color: #E8705A;
+}
+
+
+/* =========================
+   输入名称
+========================= */
+
+.name-input {
+  height: 90rpx;
+
+  padding: 0 28rpx;
+
+  box-sizing: border-box;
+
+  background: #fff;
+
+  border: 3rpx solid #E9DDD3;
+
+  border-radius: 25rpx;
+
+  font-size: 25rpx;
+}
+
+
+/* =========================
+   预览
+========================= */
+
+.preview {
+  margin-top: 30rpx;
+
+  padding: 28rpx;
+
+  background: #fff;
+
+  border-radius: 32rpx;
+
+  box-shadow: 0 6rpx 22rpx rgba(139,105,20,.07);
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.preview-icon {
+  width: 110rpx;
+  height: 110rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 26rpx;
+
+  font-size: 65rpx;
+}
+
+.preview-info {
+  flex: 1;
+}
+
+.preview-name {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.preview-desc {
+  margin-top: 8rpx;
+
+  font-size: 21rpx;
+
+  color: #A58A75;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 28rpx;
+  padding-top: 22rpx;
+
+  border-top: 1rpx solid #EEE3DA;
+
+  font-size: 23rpx;
+  color: #A58A75;
+}
+
+.total-price {
+  color: #E8705A;
+
+  font-size: 38rpx;
+
+  font-weight: 900;
+}
+
+
+/* =========================
+   按钮
+========================= */
+
+.buttons {
+  display: flex;
+  gap: 20rpx;
+
+  margin-top: 35rpx;
+}
+
+.next-button,
+.prev-button,
+.add-button {
+  height: 88rpx;
+
+  line-height: 88rpx;
+
+  border-radius: 44rpx;
+
+  font-size: 27rpx;
+
+  font-weight: 800;
+}
+
+.next-button {
+  flex: 1;
+
+  background: linear-gradient(
+    135deg,
+    #E8705A,
+    #F0947F
+  );
+
+  color: #fff;
+}
+
+.next-button.small {
+  flex: 1;
+}
+
+.prev-button {
+  flex: 1;
+
+  background: #fff;
+
+  color: #7A6555;
+
+  border: 2rpx solid #E8DDD4;
+}
+
+.prev-button.full {
+  width: 100%;
+
+  margin-top: 20rpx;
+}
+
+.add-button {
+  width: 100%;
+
+  margin-top: 30rpx;
+
+  background: linear-gradient(
+    135deg,
+    #E8705A,
+    #F0947F
+  );
+
+  color: #fff;
+
+  box-shadow: 0 10rpx 30rpx rgba(232,112,90,.2);
+}
+
+button::after {
+  border: none;
+}

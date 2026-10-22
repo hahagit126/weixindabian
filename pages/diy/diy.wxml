@@ -1,0 +1,397 @@
+<view class="page">
+
+<!-- 顶部 -->
+<view class="header">
+
+  <view class="back" bindtap="prevStep">
+    ←
+  </view>
+
+  <view class="header-text">
+
+    <view class="title">
+      🎨 自创专属菜品
+    </view>
+
+    <view class="subtitle">
+      跟着布布搭配你的独家美味~
+    </view>
+
+  </view>
+
+</view>
+
+
+<!-- ==================== 步骤条 ==================== -->
+
+<view class="steps">
+
+  <block wx:for="{{[1,2,3,4]}}" wx:key="*this">
+
+    <view class="step-box">
+
+      <view
+        class="step {{step == item ? 'current' : ''}} {{step > item ? 'completed' : ''}}"
+      >
+        {{step > item ? '✓' : item}}
+      </view>
+
+      <view
+        wx:if="{{item < 4}}"
+        class="step-line"
+      ></view>
+
+    </view>
+
+  </block>
+
+</view>
+
+
+<!-- ==================== 第一步：选择灵感 ==================== -->
+
+<view
+  wx:if="{{step == 1}}"
+  class="content"
+>
+
+  <view class="section-title">
+
+    <view class="line"></view>
+
+    <view>
+
+      <view class="title-main">
+        📸 选风格灵感
+      </view>
+
+      <view class="title-sub">
+        选一张你喜欢的风格参考
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <view class="inspiration-grid">
+
+    <view
+      wx:for="{{inspirations}}"
+      wx:key="id"
+      class="inspiration {{selectedInspiration == item.id ? 'selected' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="selectInspiration"
+    >
+
+      <view
+        class="inspiration-image"
+        style="background: {{item.background}};"
+      >
+
+        <text>
+          {{item.emoji}}
+        </text>
+
+      </view>
+
+
+      <view class="inspiration-info">
+
+        <view class="inspiration-name">
+          {{item.name}}
+        </view>
+
+        <view class="inspiration-desc">
+          {{item.desc}}
+        </view>
+
+      </view>
+
+
+      <view
+        wx:if="{{selectedInspiration == item.id}}"
+        class="selected-check"
+      >
+        ✓
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <button
+    class="next-button"
+    bindtap="nextStep"
+  >
+    下一步 →
+  </button>
+
+</view>
+
+
+<!-- ==================== 第二步：选择基底 ==================== -->
+
+<view
+  wx:if="{{step == 2}}"
+  class="content"
+>
+
+  <view class="section-title">
+
+    <view class="line"></view>
+
+    <view>
+
+      <view class="title-main">
+        🥤 选基底
+      </view>
+
+      <view class="title-sub">
+        打下美味的基础
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <view class="base-grid">
+
+    <view
+      wx:for="{{bases}}"
+      wx:key="id"
+      class="base-card {{selectedBase == item.id ? 'selected' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="selectBase"
+    >
+
+      <view
+        class="base-icon"
+        style="background: {{item.background}};"
+      >
+        {{item.emoji}}
+      </view>
+
+
+      <view class="base-name">
+        {{item.name}}
+      </view>
+
+
+      <view class="base-price">
+        ¥{{item.price}}
+      </view>
+
+
+      <view
+        wx:if="{{selectedBase == item.id}}"
+        class="selected-check"
+      >
+        ✓
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <view class="buttons">
+
+    <button
+      class="prev-button"
+      bindtap="prevStep"
+    >
+      ← 上一步
+    </button>
+
+
+    <button
+      class="next-button small"
+      bindtap="nextStep"
+    >
+      下一步 →
+    </button>
+
+  </view>
+
+</view>
+
+
+<!-- ==================== 第三步：添加配料 ==================== -->
+
+<view
+  wx:if="{{step == 3}}"
+  class="content"
+>
+
+  <view class="section-title">
+
+    <view class="line"></view>
+
+    <view>
+
+      <view class="title-main">
+        🍓 加配料
+      </view>
+
+      <view class="title-sub">
+        可以多选哦~
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <view class="topping-grid">
+
+    <view
+      wx:for="{{toppings}}"
+      wx:key="id"
+      class="topping {{item.selected ? 'selected' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="toggleTopping"
+    >
+
+      <text class="topping-emoji">
+        {{item.emoji}}
+      </text>
+
+      <text class="topping-name">
+        {{item.name}}
+      </text>
+
+      <text class="topping-price">
+        +¥{{item.price}}
+      </text>
+
+      <view
+        wx:if="{{item.selected}}"
+        class="topping-check"
+      >
+        ✓
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <view class="buttons">
+
+    <button
+      class="prev-button"
+      bindtap="prevStep"
+    >
+      ← 上一步
+    </button>
+
+
+    <button
+      class="next-button small"
+      bindtap="nextStep"
+    >
+      下一步 →
+    </button>
+
+  </view>
+
+</view>
+
+
+<!-- ==================== 第四步：命名 ==================== -->
+
+<view
+  wx:if="{{step == 4}}"
+  class="content"
+>
+
+  <view class="section-title">
+
+    <view class="line"></view>
+
+    <view>
+
+      <view class="title-main">
+        ✨ 命名你的作品
+      </view>
+
+      <view class="title-sub">
+        给独家创作起个名字吧
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <input
+    class="name-input"
+    maxlength="12"
+    placeholder="如：布布的幸福特调..."
+    value="{{productName}}"
+    bindinput="inputName"
+  />
+
+
+  <!-- DIY预览 -->
+
+  <view class="preview">
+
+    <view class="preview-header">
+
+      <view class="preview-icon">
+        {{previewEmoji}}
+      </view>
+
+
+      <view class="preview-info">
+
+        <view class="preview-name">
+          {{previewName}}
+        </view>
+
+        <view class="preview-desc">
+          {{previewDesc}}
+        </view>
+
+      </view>
+
+    </view>
+
+
+    <view class="price-row">
+
+      <text>
+        预估价格
+      </text>
+
+      <text class="total-price">
+        ¥{{previewPrice}}
+      </text>
+
+    </view>
+
+  </view>
+
+
+  <button
+    class="add-button"
+    bindtap="addToCart"
+  >
+    🧸 加入购物车
+  </button>
+
+
+  <button
+    class="prev-button full"
+    bindtap="prevStep"
+  >
+    ← 上一步
+  </button>
+
+</view>
+
+</view>
