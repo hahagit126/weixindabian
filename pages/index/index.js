@@ -218,7 +218,8 @@ Page({
     this.renderMenu()
   
     wx.request({
-      url: 'http://127.0.0.1/bear-store-api/',
+      //url: 'http://127.0.0.1/bear-store-api/',
+      url: 'http://10.189.151.105/bear-store-api/',
       method: 'GET',
   
       success: (res) => {

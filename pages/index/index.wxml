@@ -20,13 +20,16 @@
       <view class="bears">
         <view class="bear white-bear">🐻</view>
         <view class="bear brown-bear">🧸</view>
-      </view>
+      </view> 
+
+      
+
 
       <view class="welcome-text">
         <view class="welcome-title">Hi~ 欢迎来到布布小铺！</view>
         <view class="welcome-desc">
           一二和布布为你准备了
-          <text>\n</text>
+          <text></text>
           今天的美味菜单 🍯
         </view>
       </view>

@@ -33,8 +33,8 @@
   },
 
   // PHP 接口地址
-  apiUrl: 'http://127.0.0.1/bear-store-api/',
-
+//  apiUrl: 'http://127.0.0.1/bear-store-api/',
+    apiUrl: 'http://10.189.151.105/bear-store-api/',
   onLoad(options) {
     const id = options && options.id ? String(options.id) : ''
 

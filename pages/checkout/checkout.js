@@ -1,305 +1,200 @@
 
 // pages/checkout/checkout.js
+const API = 'http://10.189.151.105/bear-store-api/'
 
 Page({
-
   data: {
-
     orderList: [],
-
     totalPrice: 0,
-
     deliveryFee: 0,
-
     finalPrice: 0,
-
     totalCount: 0,
-
-    // 默认校园配送
     deliveryType: '配送',
     deliveryAddress: '',
     locationName: '',
     latitude: 0,
     longitude: 0,
     markers: [],
-    hasLocation: false
-
+    hasLocation: false,
+    submitting: false
   },
 
-
-  /**
-   * 页面加载
-   */
   onLoad() {
-
     this.loadOrder()
-
   },
 
-
-  /**
-   * 页面显示
-   */
   onShow() {
-
     this.loadOrder()
-
   },
 
+  // 离开结算页时恢复完整购物车
+  // 订单成功后会先删除备份，因此不会恢复已购买商品
+  onUnload() {
+    this.restoreCartAfterCheckout()
+  },
 
-  /**
-   * 加载订单
-   */
-  loadOrder() {
+  restoreCartAfterCheckout() {
+    const originalCart = wx.getStorageSync('cart_before_checkout')
 
-    const cart =
-      wx.getStorageSync('cart') || {}
-
-    const diyItems =
-      wx.getStorageSync('diy_items') || []
-
-
-    // =========================
-    // 读取后台商品
-    // =========================
-
-    let products =
-      wx.getStorageSync('products')
-
-
-    // 如果后台还没有商品
-    // 使用默认商品
     if (
-      !products ||
-      !Array.isArray(products) ||
-      products.length === 0
+      originalCart &&
+      typeof originalCart === 'object' &&
+      !Array.isArray(originalCart)
     ) {
+      wx.setStorageSync('cart', originalCart)
+      wx.removeStorageSync('cart_before_checkout')
+    }
+  },
 
-      products = [
+  // 加载结算商品
+  loadOrder() {
+    const cart = wx.getStorageSync('cart') || {}
+    let diyItems = wx.getStorageSync('diy_items') || []
 
-        {
-          id: 1,
-          name: '一二奶茶',
-          desc: '布布特调的经典奶茶',
-          price: 12,
-          emoji: '🧋'
-        },
-
-        {
-          id: 2,
-          name: '布布拿铁',
-          desc: '香浓丝滑的焦糖拿铁',
-          price: 22,
-          emoji: '☕'
-        },
-
-        {
-          id: 3,
-          name: '小熊蜂蜜水',
-          desc: '温润甜蜜的蜂蜜柠檬',
-          price: 15,
-          emoji: '🍯'
-        },
-
-        {
-          id: 4,
-          name: '草莓慕斯',
-          desc: '一二最爱的草莓甜品',
-          price: 28,
-          emoji: '🍰'
-        },
-
-        {
-          id: 5,
-          name: '巧克力曲奇',
-          desc: '酥脆浓郁的巧克力饼干',
-          price: 16,
-          emoji: '🍪'
-        },
-
-        {
-          id: 6,
-          name: '抹茶毛巾卷',
-          desc: '清新抹茶味蛋糕卷',
-          price: 25,
-          emoji: '🧁'
-        },
-
-        {
-          id: 7,
-          name: '熊掌三明治',
-          desc: '超可爱的熊掌造型',
-          price: 32,
-          emoji: '🥐'
-        },
-
-        {
-          id: 8,
-          name: '布布便当',
-          desc: '丰盛的每日营养便当',
-          price: 38,
-          emoji: '🍱'
-        },
-
-        {
-          id: 9,
-          name: '樱花气泡水',
-          desc: '限定春日浪漫饮品',
-          price: 20,
-          emoji: '🌸'
-        },
-
-        {
-          id: 10,
-          name: '蜜桃乌龙',
-          desc: '清甜蜜桃遇上醇香乌龙',
-          price: 19,
-          emoji: '🍑'
-        }
-
-      ]
-
-
-      wx.setStorageSync(
-        'products',
-        products
-      )
-
+    if (!Array.isArray(diyItems)) {
+      diyItems = Object.keys(diyItems).map(key => ({
+        ...diyItems[key],
+        id: diyItems[key].id || key
+      }))
     }
 
+    wx.request({
+      url: API,
+      method: 'GET',
 
-    // =========================
-    // 创建订单商品列表
-    // =========================
+      success: res => {
+        if (
+          res.statusCode !== 200 ||
+          !res.data ||
+          res.data.code !== 0 ||
+          !Array.isArray(res.data.data)
+        ) {
+          wx.showToast({
+            title: '读取服务器商品失败',
+            icon: 'none'
+          })
+          return
+        }
 
-    const orderList = []
+        const products = res.data.data
+        wx.setStorageSync('products', products)
 
+        const orderList = []
 
-    Object.keys(cart).forEach(key => {
+        Object.keys(cart).forEach(key => {
+          const quantity = Number(cart[key]) || 0
+          if (quantity <= 0) return
 
-      const quantity =
-        Number(cart[key]) || 0
+          const product = products.find(
+            item => String(item.id) === String(key)
+          )
 
+          if (product) {
+            if (
+              product.onSale === false ||
+              product.deleted === true
+            ) {
+              return
+            }
 
-      if (quantity <= 0) {
-        return
-      }
+            const price = Number(product.price)
+            if (!Number.isFinite(price) || price < 0) return
 
+            orderList.push({
+              ...product,
+              cartId: key,
+              quantity,
+              price,
+              subtotal: Number((price * quantity).toFixed(2)),
+              isDIY: false
+            })
+            return
+          }
 
-      // 优先读取后台商品
-      let item =
-        products.find(product => {
+          const diyItem = diyItems.find(
+            item => String(item.id) === String(key)
+          )
 
-          return String(product.id) ===
-            String(key)
+          if (!diyItem || !diyItem.diy) {
+            wx.showToast({
+              title: '有商品信息缺失，请重新制作 DIY 商品',
+              icon: 'none'
+            })
+            return
+          }
 
+          const price = Number(diyItem.price)
+          if (!Number.isFinite(price) || price < 0) return
+
+          orderList.push({
+            ...diyItem,
+            cartId: key,
+            quantity,
+            price,
+            subtotal: Number((price * quantity).toFixed(2)),
+            isDIY: true
+          })
         })
 
+        const totalPrice = Number(
+          orderList.reduce(
+            (sum, item) => sum + Number(item.subtotal || 0),
+            0
+          ).toFixed(2)
+        )
 
-      // 如果不是普通商品
-      // 再查找 DIY 商品
-      if (!item) {
+        const totalCount = orderList.reduce(
+          (sum, item) => sum + Number(item.quantity || 0),
+          0
+        )
 
-        item =
-          diyItems.find(product => {
+        this.calculatePrice(
+          totalPrice,
+          totalCount,
+          this.data.deliveryType,
+          orderList
+        )
+      },
 
-            return String(product.id) ===
-              String(key)
-
-          })
-
+      fail: () => {
+        wx.showToast({
+          title: '无法连接服务器，请检查 PHPstudy',
+          icon: 'none'
+        })
       }
-
-
-      if (!item) {
-        return
-      }
-
-
-      // =========================
-      // 商品已经下架
-      // =========================
-
-      if (
-        item.onSale === false
-      ) {
-
-        return
-
-      }
-
-
-      const price =
-        Number(item.price) || 0
-
-
-      orderList.push({
-
-        ...item,
-
-        cartId: key,
-
-        quantity: quantity,
-
-        price: price,
-
-        subtotal:
-          price * quantity
-
-      })
-
     })
-
-
-    // =========================
-    // 计算金额
-    // =========================
-
-    let totalPrice = 0
-
-    let totalCount = 0
-
-
-    orderList.forEach(item => {
-
-      totalPrice +=
-        Number(item.subtotal) || 0
-
-      totalCount +=
-        Number(item.quantity) || 0
-
-    })
-
-
-    // =========================
-    // 计算配送费
-    // =========================
-
-    this.calculatePrice(
-
-      totalPrice,
-
-      totalCount,
-
-      this.data.deliveryType,
-
-      orderList
-
-    )
-
   },
 
-
-  /** 手动打开微信原生地图选点 */
+  // 手动选择配送地址
   chooseDeliveryLocation() {
+    const options = {}
+
+    if (this.data.hasLocation) {
+      options.latitude = this.data.latitude
+      options.longitude = this.data.longitude
+    }
+
     wx.chooseLocation({
-      latitude: this.data.hasLocation ? this.data.latitude : undefined,
-      longitude: this.data.hasLocation ? this.data.longitude : undefined,
-      success: (res) => {
-        const name = res.name || '已选择配送位置'
-        const address = res.address || name
+      ...options,
+
+      success: res => {
+        const name = res.name || res.address
+
+        if (!name && !res.address) {
+          wx.showToast({
+            title: '请重新选择具体配送地址',
+            icon: 'none'
+          })
+          return
+        }
+
+        const address = [
+          res.address || '',
+          res.name || ''
+        ].filter(Boolean).join(' ')
+
         this.setData({
-          locationName: name,
+          locationName: name || '已选择配送位置',
           deliveryAddress: address,
           latitude: res.latitude,
           longitude: res.longitude,
@@ -308,33 +203,44 @@ Page({
             id: 1,
             latitude: res.latitude,
             longitude: res.longitude,
-            title: name,
+            title: name || '配送位置',
             width: 28,
             height: 28
           }]
         })
+
+        wx.showToast({
+          title: '配送地址已确认',
+          icon: 'success'
+        })
       },
-      fail: (err) => {
+
+      fail: err => {
         if (err && /cancel/i.test(err.errMsg || '')) return
-        wx.showToast({ title: '无法打开地图选点，请检查定位权限', icon: 'none' })
+
+        wx.showToast({
+          title: '无法打开地图选点，请检查定位权限',
+          icon: 'none'
+        })
       }
     })
   },
 
-  /** 自动定位当前位置；地址名称可再通过地图选点确认 */
+  // 自动定位，然后打开地图确认具体配送地址
   locateCurrentPosition() {
     wx.getSetting({
-      success: (setting) => {
+      success: setting => {
         const runLocation = () => {
           wx.getLocation({
             type: 'gcj02',
             isHighAccuracy: true,
-            success: (res) => {
+
+            success: res => {
+              // 先记录当前经纬度，作为地图初始位置
               this.setData({
                 latitude: res.latitude,
                 longitude: res.longitude,
-                locationName: '我的当前位置',
-                deliveryAddress: '当前位置（请点击地图确认具体配送地址）',
+                locationName: '正在确认当前位置',
                 hasLocation: true,
                 markers: [{
                   id: 1,
@@ -345,348 +251,395 @@ Page({
                   height: 28
                 }]
               })
-              wx.showToast({ title: '定位成功，可继续确认地址', icon: 'success' })
+
+              // 打开微信地图，确认实际配送位置
+              wx.chooseLocation({
+                latitude: res.latitude,
+                longitude: res.longitude,
+
+                success: location => {
+                  const name = location.name || location.address
+
+                  if (!name && !location.address) {
+                    this.setData({
+                      deliveryAddress: '',
+                      locationName: '',
+                      hasLocation: false
+                    })
+
+                    wx.showToast({
+                      title: '请重新选择具体配送地址',
+                      icon: 'none'
+                    })
+                    return
+                  }
+
+                  const address = [
+                    location.address || '',
+                    location.name || ''
+                  ].filter(Boolean).join(' ')
+
+                  this.setData({
+                    locationName: name || '已选择配送位置',
+                    deliveryAddress: address,
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    hasLocation: true,
+                    markers: [{
+                      id: 1,
+                      latitude: location.latitude,
+                      longitude: location.longitude,
+                      title: name || '配送位置',
+                      width: 28,
+                      height: 28
+                    }]
+                  })
+
+                  wx.showToast({
+                    title: '配送地址已确认',
+                    icon: 'success'
+                  })
+                },
+
+                fail: err => {
+                  if (err && /cancel/i.test(err.errMsg || '')) {
+                    wx.showToast({
+                      title: '请确认配送地址后再提交',
+                      icon: 'none'
+                    })
+                    return
+                  }
+
+                  wx.showToast({
+                    title: '地图选点失败，请手动选择地址',
+                    icon: 'none'
+                  })
+                }
+              })
             },
-            fail: () => wx.showToast({ title: '定位失败，请检查手机/开发者工具定位权限', icon: 'none' })
+
+            fail: () => {
+              wx.showToast({
+                title: '定位失败，请检查定位权限',
+                icon: 'none'
+              })
+            }
           })
         }
-        if (setting.authSetting && setting.authSetting['scope.userLocation'] === false) {
+
+        if (
+          setting.authSetting &&
+          setting.authSetting['scope.userLocation'] === false
+        ) {
           wx.showModal({
             title: '需要定位权限',
-            content: '请在设置中允许使用位置信息，再进行自动定位。',
+            content: '请在设置中允许使用位置信息。',
             confirmText: '去设置',
-            success: (res) => { if (res.confirm) wx.openSetting({}) }
+            success: res => {
+              if (res.confirm) {
+                wx.openSetting({})
+              }
+            }
           })
         } else {
           runLocation()
         }
       },
-      fail: () => wx.showToast({ title: '无法读取定位权限设置', icon: 'none' })
+
+      fail: () => {
+        wx.showToast({
+          title: '无法读取定位权限设置',
+          icon: 'none'
+        })
+      }
     })
   },
 
-  /**
-   * 选择配送方式
-   */
+  // 选择配送或到店自取
   selectDelivery(e) {
-
-    const type =
-      e.currentTarget.dataset.type
-
+    const type = e.currentTarget.dataset.type
 
     this.setData({
-
       deliveryType: type
-
     })
-
 
     this.calculatePrice(
-
       this.data.totalPrice,
-
       this.data.totalCount,
-
       type,
-
       this.data.orderList
-
     )
-
   },
 
-
-  /**
-   * 重新计算价格
-   */
-  calculatePrice(
-
-    totalPrice,
-
-    totalCount,
-
-    deliveryType,
-
-    orderList
-
-  ) {
-
+  // 计算金额
+  calculatePrice(totalPrice, totalCount, deliveryType, orderList) {
     let deliveryFee = 0
 
-
-    // 到店自取免费
     if (
-      deliveryType === '到店自取'
+      deliveryType === '配送' &&
+      totalPrice > 0 &&
+      totalPrice < 30
     ) {
-
-      deliveryFee = 0
-
-    } else {
-
-      // 校园配送
-      // 满30元免配送费
-      // 不满30元收3元
-
-      deliveryFee =
-        totalPrice >= 30 ||
-        totalPrice === 0
-          ? 0
-          : 3
-
+      deliveryFee = 3
     }
-
 
     this.setData({
-
-      orderList: orderList,
-
-      totalPrice: totalPrice,
-
-      deliveryFee: deliveryFee,
-
-      finalPrice:
-        totalPrice + deliveryFee,
-
-      totalCount: totalCount
-
+      orderList,
+      totalPrice,
+      deliveryFee,
+      finalPrice: Number((totalPrice + deliveryFee).toFixed(2)),
+      totalCount
     })
-
   },
 
-
-  /**
-   * 提交订单
-   */
+  // 确认提交订单
   submitOrder() {
+    if (this.data.submitting) return
 
-    if (
-      this.data.orderList.length === 0
-    ) {
-
+    if (!this.data.orderList.length) {
       wx.showToast({
-
         title: '没有可提交的商品',
-
         icon: 'none'
-
       })
-
       return
-
     }
 
-
-    if (this.data.deliveryType === '配送' && !this.data.hasLocation) {
+    // 配送订单必须有已确认的地址和有效坐标
+    if (
+      this.data.deliveryType === '配送' &&
+      (
+        !this.data.hasLocation ||
+        !this.data.deliveryAddress ||
+        !this.data.latitude ||
+        !this.data.longitude ||
+        this.data.deliveryAddress.indexOf('请点击地图确认') !== -1
+      )
+    ) {
       wx.showModal({
         title: '请选择配送地址',
-        content: '请手动选择地图位置，或先使用自动定位再确认配送地址。',
+        content: '请先自动定位并在地图中确认具体配送地址。',
         confirmText: '选择地址',
-        success: (res) => { if (res.confirm) this.chooseDeliveryLocation() }
+        success: res => {
+          if (res.confirm) {
+            this.chooseDeliveryLocation()
+          }
+        }
       })
       return
     }
 
     wx.showModal({
-
       title: '确认订单',
-
       content:
         this.data.deliveryType +
-        '，共' +
-        this.data.totalCount +
-        '件商品，合计¥' +
-        this.data.finalPrice,
-
+        '，共' + this.data.totalCount +
+        '件商品，预计合计¥' + this.data.finalPrice.toFixed(2),
       confirmText: '提交订单',
-
       cancelText: '再看看',
-
-
       success: res => {
-
-        if (!res.confirm) {
-
-          return
-
+        if (res.confirm) {
+          this.createServerOrder()
         }
-
-
-        // =========================
-        // 读取原有订单
-        // =========================
-
-        const oldOrders =
-          wx.getStorageSync('orders') || []
-
-
-        const now =
-          new Date()
-
-
-        const year =
-          now.getFullYear()
-
-
-        const month =
-          String(
-            now.getMonth() + 1
-          ).padStart(2, '0')
-
-
-        const day =
-          String(
-            now.getDate()
-          ).padStart(2, '0')
-
-
-        const hour =
-          String(
-            now.getHours()
-          ).padStart(2, '0')
-
-
-        const minute =
-          String(
-            now.getMinutes()
-          ).padStart(2, '0')
-
-
-        const orderTime =
-          year +
-          '-' +
-          month +
-          '-' +
-          day +
-          ' ' +
-          hour +
-          ':' +
-          minute
-
-
-        const orderId =
-          String(year) +
-          month +
-          day +
-          String(
-            Date.now()
-          ).slice(-6)
-
-
-        // =========================
-        // 创建订单
-        // =========================
-
-        const newOrder = {
-
-          id: orderId,
-
-          time: orderTime,
-
-          // 新订单默认待处理
-          status: 'pending',
-
-          statusText: '待处理',
-
-          // 配送方式
-          deliveryType:
-            this.data.deliveryType,
-
-          deliveryInfo:
-            this.data.deliveryType === '配送'
-              ? (this.data.deliveryAddress || '未填写配送地址')
-              : '到店自取',
-
-          deliveryAddress: this.data.deliveryType === '配送' ? this.data.deliveryAddress : '',
-          latitude: this.data.deliveryType === '配送' ? this.data.latitude : 0,
-          longitude: this.data.deliveryType === '配送' ? this.data.longitude : 0,
-
-          // 商品
-          items:
-            this.data.orderList,
-
-          // 金额
-          totalPrice:
-            this.data.totalPrice,
-
-          deliveryFee:
-            this.data.deliveryFee,
-
-          finalPrice:
-            this.data.finalPrice,
-
-          totalCount:
-            this.data.totalCount
-
-        }
-
-
-        // 新订单放到最前面
-        oldOrders.unshift(
-          newOrder
-        )
-
-
-        // 保存订单
-        wx.setStorageSync(
-
-          'orders',
-
-          oldOrders
-
-        )
-
-
-        // =========================
-        // 清空购物车
-        // =========================
-
-        wx.setStorageSync(
-
-          'cart',
-
-          {}
-
-        )
-
-
-        wx.showToast({
-
-          title: '订单提交成功',
-
-          icon: 'success',
-
-          duration: 1200
-
-        })
-
-
-        // 返回首页
-        setTimeout(() => {
-
-          wx.reLaunch({
-
-            url:
-              '/pages/index/index'
-
-          })
-
-        }, 1200)
-
       }
-
     })
-
   },
 
+  // 创建服务器订单
+  createServerOrder() {
+    if (this.data.submitting) return
 
-  /**
-   * 返回
-   */
+    this.setData({
+      submitting: true
+    })
+
+    const items = this.data.orderList.map(item => {
+      const orderItem = {
+        id: item.id,
+        quantity: Number(item.quantity)
+      }
+
+      if (item.isDIY || item.isDiy) {
+        orderItem.type = 'diy'
+        orderItem.diy = item.diy
+        orderItem.customName = item.customName || item.name
+      }
+
+      return orderItem
+    })
+
+    const isDelivery = this.data.deliveryType === '配送'
+
+    const remark = isDelivery
+      ? '校园配送；收货地址：' + this.data.deliveryAddress +
+        '；位置：' + this.data.latitude + ',' + this.data.longitude
+      : '到店自取'
+
+    wx.request({
+      url: API,
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: {
+        action: 'createOrder',
+        order: {
+          items,
+          remark,
+          deliveryType: this.data.deliveryType,
+          deliveryAddress: isDelivery
+            ? this.data.deliveryAddress
+            : '',
+          latitude: isDelivery ? this.data.latitude : null,
+          longitude: isDelivery ? this.data.longitude : null
+        }
+      },
+
+      success: res => {
+        const body = res.data || {}
+
+        if (
+          res.statusCode !== 200 ||
+          body.code !== 0 ||
+          !body.data
+        ) {
+          this.setData({
+            submitting: false
+          })
+
+          wx.showModal({
+            title: '订单提交失败',
+            content: body.message ||
+              '服务器未能创建订单，请检查商品信息后重试。',
+            showCancel: false
+          })
+          return
+        }
+
+        const serverOrder = body.data
+        const totalPrice = Number(serverOrder.total || 0)
+        const deliveryFee = Number(serverOrder.deliveryFee || 0)
+        const finalPrice = Number(
+          serverOrder.finalPrice !== undefined
+            ? serverOrder.finalPrice
+            : totalPrice + deliveryFee
+        )
+
+        const newOrder = {
+          ...serverOrder,
+          id: serverOrder.id,
+          time: serverOrder.createdAt || '',
+          status: serverOrder.status || '待处理',
+          statusText: serverOrder.status || '待处理',
+          deliveryType:
+            serverOrder.deliveryType || this.data.deliveryType,
+          deliveryInfo: serverOrder.deliveryAddress ||
+            (isDelivery ? this.data.deliveryAddress : '到店自取'),
+          deliveryAddress: serverOrder.deliveryAddress ||
+            (isDelivery ? this.data.deliveryAddress : ''),
+          latitude: serverOrder.latitude !== undefined
+            ? serverOrder.latitude
+            : (isDelivery ? this.data.latitude : 0),
+          longitude: serverOrder.longitude !== undefined
+            ? serverOrder.longitude
+            : (isDelivery ? this.data.longitude : 0),
+          totalPrice,
+          deliveryFee,
+          finalPrice,
+          totalCount: this.data.totalCount
+        }
+
+        // 保存本地订单记录
+        const oldOrders = wx.getStorageSync('orders') || []
+        const orders = Array.isArray(oldOrders) ? oldOrders : []
+
+        const filteredOrders = orders.filter(
+          order => String(order.id) !== String(newOrder.id)
+        )
+
+        filteredOrders.unshift(newOrder)
+        wx.setStorageSync('orders', filteredOrders)
+
+        // 订单成功后，从结算前的完整购物车中删除已购买商品
+        const backupCart = wx.getStorageSync('cart_before_checkout')
+        const currentCart = wx.getStorageSync('cart') || {}
+
+        const cart = (
+          backupCart &&
+          typeof backupCart === 'object' &&
+          !Array.isArray(backupCart)
+        )
+          ? { ...backupCart }
+          : { ...currentCart }
+
+        this.data.orderList.forEach(item => {
+          delete cart[String(item.cartId)]
+        })
+
+        // 保留仍在购物车中的 DIY 商品
+        const diyItems = wx.getStorageSync('diy_items') || []
+
+        const diyList = Array.isArray(diyItems)
+          ? diyItems
+          : Object.keys(diyItems).map(key => ({
+              ...diyItems[key],
+              id: diyItems[key].id || key
+            }))
+
+        const remainingDiy = diyList.filter(item =>
+          Object.prototype.hasOwnProperty.call(
+            cart,
+            String(item.id)
+          )
+        )
+
+        wx.setStorageSync('cart', cart)
+        wx.setStorageSync('diy_items', remainingDiy)
+
+        // 清除备份，避免离开结算页时恢复已购买商品
+        wx.removeStorageSync('cart_before_checkout')
+
+        this.setData({
+          submitting: false
+        })
+
+        wx.showModal({
+          title: '下单成功',
+          content:
+            '订单编号：' + (newOrder.id || '已生成') +
+            '\n实付金额：¥' + finalPrice.toFixed(2),
+          showCancel: false,
+          confirmText: '返回首页',
+          success: () => {
+            wx.reLaunch({
+              url: '/pages/index/index'
+            })
+          }
+        })
+      },
+
+      fail: () => {
+        this.setData({
+          submitting: false
+        })
+
+        wx.showModal({
+          title: '连接失败',
+          content:
+            '订单没有得到服务器确认，购物车已保留。请检查 PHPstudy 和接口地址后重试。',
+          showCancel: false
+        })
+      }
+    })
+  },
+
+  // 返回上一页
   goBack() {
-
-    wx.navigateBack()
-
+    wx.navigateBack({
+      fail: () => {
+        wx.reLaunch({
+          url: '/pages/index/index'
+        })
+      }
+    })
   }
-
 })
-
